@@ -5,24 +5,22 @@
 dpkg-reconfigure tzdata
 apt-get -y update
 apt-get -y upgrade
-apt-get -y install apache2 apache2-prefork-dev autoconf bison build-essential curl git-core imagemagick libapr1-dev libaprutil1-dev libcurl4-openssl-dev libid3-3.8.3-dev libmysqlclient16 libmysqlclient16-dev libreadline6 libreadline6-dev libsqlite3-0 libsqlite3-dev libssl-dev libxml2 libxml2-dev libxslt-dev libyaml-dev mysql-client mysql-common mysql-server openssl sqlite3 zlib1g zlib1g-dev
+apt-get -y install apache2 apache2-prefork-dev build-essential zlib1g-dev libssl-dev libreadline-dev libyaml-dev libcurl4-openssl-dev curl git-core python-software-properties
 
 curl -L https://get.rvm.io | bash -s stable --ruby
-source /etc/profile
+source /usr/local/rvm/scripts/rvm
 
+rvm install ruby-1.9.3
+rvm --default use 1.9.3
 adduser --home /var/ror ror
 adduser ror sudo
 adduser ror rvm
 
+echo "gem: --no-ri --no-rdoc" >> ~/.gemrc
 
+gem install bundler rails passenger
+passenger-install-apache2-module
 
-
-# 
-# rvm install ruby-1.9.3
-# rvm --default use 1.9.3
-# 
-# gem install bundler rails passenger
-# passenger-install-apache2-module
 # 
 # echo "LoadModule passenger_module /usr/local/rvm/gems/ruby-1.9.2-p136/gems/passenger-3.0.2/ext/apache2/mod_passenger.so" > /etc/apache2/mods-available/passenger.load
 # echo -e "PassengerRoot /usr/local/rvm/gems/ruby-1.9.2-p136/gems/passenger-3.0.2\nPassengerRuby /usr/local/rvm/wrappers/ruby-1.9.2-p136/ruby" > /etc/apache2/mods-available/passenger.conf
