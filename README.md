@@ -1,8 +1,3 @@
-server_tools
-============
-
-Set of server tools and configurations
-
 ```
 apt-get update
 apt-get install git-core
