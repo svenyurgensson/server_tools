@@ -5,7 +5,22 @@
 dpkg-reconfigure tzdata
 apt-get -y update
 apt-get -y upgrade
-apt-get -y install apache2 apache2-prefork-dev build-essential zlib1g-dev libssl-dev libreadline-dev libyaml-dev libcurl4-openssl-dev curl git-core python-software-properties
+
+# ==============
+# = Dipendenze =
+# ==============
+
+BASE="build-essential curl git-core openssl autoconf libc6-dev ncurses-dev automake libtool bison subversion"
+APACHE="apache2 apache2-prefork-dev"
+LIBXML="libxml2-dev libxslt1-dev"
+NODEJS="nodejs"
+RUBY_DEPS="libyaml-dev libcurl4-openssl-dev libssl-dev libreadline6 libreadline6-dev zlib1g zlib1g-dev libssl-dev"
+SQLITE="libsqlite3-0 libsqlite3-dev sqlite3"
+IMAGEMAGICK="imagemagick"
+MYSQL="libmysqlclient-dev"
+SENDMAIL="sendmail"
+
+apt-get -y install $BASE $APACHE $LIBXML $RUBY_DEPS $IMAGEMAGICK $MYSQL $NODEJS
 
 curl -L https://get.rvm.io | bash -s stable --ruby
 source /usr/local/rvm/scripts/rvm
@@ -17,8 +32,8 @@ adduser ror sudo
 adduser ror rvm
 
 echo "gem: --no-ri --no-rdoc" >> ~/.gemrc
+gem install bundler passenger
 
-gem install bundler rails passenger
 passenger-install-apache2-module
 
 # 
