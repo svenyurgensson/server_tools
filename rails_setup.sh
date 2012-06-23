@@ -12,14 +12,13 @@ apt-get -y upgrade
 BASE="build-essential curl git-core openssl autoconf libc6-dev ncurses-dev automake libtool bison subversion"
 APACHE="apache2 apache2-prefork-dev"
 LIBXML="libxml2-dev libxslt1-dev"
-NODEJS="nodejs"
 RUBY_DEPS="libyaml-dev libcurl4-openssl-dev libssl-dev libreadline6 libreadline6-dev zlib1g zlib1g-dev libssl-dev"
 SQLITE="libsqlite3-0 libsqlite3-dev sqlite3"
 IMAGEMAGICK="imagemagick"
 MYSQL="mysql-server libmysqlclient-dev"
 SENDMAIL="sendmail"
-
-apt-get -y install $BASE $APACHE $LIBXML $RUBY_DEPS $IMAGEMAGICK $MYSQL $NODEJS
+NODEJS="nodejs"
+apt-get -y install $BASE $APACHE $LIBXML $RUBY_DEPS $SQLITE $IMAGEMAGICK $MYSQL $SENDMAIL $NODEJS
 
 # =======
 # = RVM =
@@ -36,6 +35,10 @@ rvm --default use 1.9.3
 adduser --home /var/ror ror
 adduser ror sudo
 adduser ror rvm
+
+su - ror -c "mkdir git"
+su - ror -c "mkdir .ssh"
+su - ror -c "touch .ssh/authorized_keys"
 
 # ======================
 # = Gemme fondamentali =
@@ -58,3 +61,12 @@ service apache2 restart
 # =========
 echo "Grant privileges to mysql rails user"
 mysql -u root -p -Bse "grant all on *.* to rails@localhost identified by 'rails'; flush privileges;"
+
+# ============================
+# = Istruzioni per il deploy =
+# ============================
+myIP=$(wget http://automation.whatismyip.com/n09230945.asp -O - -o /dev/null)
+echo "On your local machine:"
+echo "cat ~/.ssh/id_*.pub | ssh ror@$myIP \"cat >> ~/.ssh/authorized_keys\""
+
+
