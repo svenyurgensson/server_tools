@@ -17,45 +17,47 @@ NODEJS="nodejs"
 RUBY_DEPS="libyaml-dev libcurl4-openssl-dev libssl-dev libreadline6 libreadline6-dev zlib1g zlib1g-dev libssl-dev"
 SQLITE="libsqlite3-0 libsqlite3-dev sqlite3"
 IMAGEMAGICK="imagemagick"
-MYSQL="libmysqlclient-dev"
+MYSQL="mysql-server libmysqlclient-dev"
 SENDMAIL="sendmail"
 
 apt-get -y install $BASE $APACHE $LIBXML $RUBY_DEPS $IMAGEMAGICK $MYSQL $NODEJS
 
+# =======
+# = RVM =
+# =======
 curl -L https://get.rvm.io | bash -s stable --ruby
 source /usr/local/rvm/scripts/rvm
 
 rvm install ruby-1.9.3
 rvm --default use 1.9.3
+
+# ==================
+# = Utente per ROR =
+# ==================
 adduser --home /var/ror ror
 adduser ror sudo
 adduser ror rvm
 
+# ======================
+# = Gemme fondamentali =
+# ======================
+
 echo "gem: --no-ri --no-rdoc" >> ~/.gemrc
 gem install bundler passenger
 
+# =============
+# = Passenger =
+# =============
 passenger-install-apache2-module
 
-# 
-# echo "LoadModule passenger_module /usr/local/rvm/gems/ruby-1.9.2-p136/gems/passenger-3.0.2/ext/apache2/mod_passenger.so" > /etc/apache2/mods-available/passenger.load
-# echo -e "PassengerRoot /usr/local/rvm/gems/ruby-1.9.2-p136/gems/passenger-3.0.2\nPassengerRuby /usr/local/rvm/wrappers/ruby-1.9.2-p136/ruby" > /etc/apache2/mods-available/passenger.conf
-# a2enmod rewrite
-# a2enmod passenger
-# 
-# echo "Grant privileges to mysql rails user"
-# mysql -u root -p -Bse "grant all on *.* to rails@localhost identified by 'rails'; flush privileges;"
-
-# adduser somebody
-# adduser deploy
-# adduser somebody sudo
-# adduser somebody rvm
-# adduser deploy rvm
-# 
-# su - somebody
-# ssh-keygen -t rsa
-# exit
-# su - deploy
-# ssh-keygen -t rsa
-# exit
-
+echo "LoadModule passenger_module /usr/local/rvm/gems/ruby-1.9.2-p136/gems/passenger-3.0.2/ext/apache2/mod_passenger.so" > /etc/apache2/mods-available/passenger.load
+echo -e "PassengerRoot /usr/local/rvm/gems/ruby-1.9.2-p136/gems/passenger-3.0.2\nPassengerRuby /usr/local/rvm/wrappers/ruby-1.9.2-p136/ruby" > /etc/apache2/mods-available/passenger.conf
+a2enmod rewrite
+a2enmod passenger
 service apache2 restart
+
+# =========
+# = Mysql =
+# =========
+echo "Grant privileges to mysql rails user"
+mysql -u root -p -Bse "grant all on *.* to rails@localhost identified by 'rails'; flush privileges;"
