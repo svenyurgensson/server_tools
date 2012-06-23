@@ -9,7 +9,6 @@ apt-get -y upgrade
 # ==============
 # = Dipendenze =
 # ==============
-
 BASE="build-essential curl git-core openssl autoconf libc6-dev ncurses-dev automake libtool bison subversion"
 APACHE="apache2 apache2-prefork-dev"
 LIBXML="libxml2-dev libxslt1-dev"
@@ -50,8 +49,6 @@ gem install bundler passenger
 # =============
 passenger-install-apache2-module
 
-echo "LoadModule passenger_module /usr/local/rvm/gems/ruby-1.9.2-p136/gems/passenger-3.0.2/ext/apache2/mod_passenger.so" > /etc/apache2/mods-available/passenger.load
-echo -e "PassengerRoot /usr/local/rvm/gems/ruby-1.9.2-p136/gems/passenger-3.0.2\nPassengerRuby /usr/local/rvm/wrappers/ruby-1.9.2-p136/ruby" > /etc/apache2/mods-available/passenger.conf
 a2enmod rewrite
 a2enmod passenger
 service apache2 restart
