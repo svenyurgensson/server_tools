@@ -8,9 +8,9 @@ WpMySqlPass="spigola2"
 
 MyHOST="localhost"      # Hostname
 
-#
-# Check arguments
-#
+# ===================
+# = Check arguments =
+# ===================
 
 if [ $# -lt 1 ]; then
 	echo
@@ -20,29 +20,29 @@ if [ $# -lt 1 ]; then
 	exit 1
 fi
 
-#
-# Parse Arguments
-#
+# ===================
+# = Parse Arguments =
+# ===================
 
 domain=$1
 id=`echo $domain | sed "s/[\.-]/_/g"`
 
-#
-# Grant privileges to user
-#
+# ============================
+# = Grant privileges to user =
+# ============================
 
 mysql -u $MyUSER -h $MyHOST -p$MyPASS -Bse "grant all on *.* to $WpMySqlUser@$MyHOST identified by '$WpMySqlPass';"
 
-#
-# Create the document root
-#
+# ============================
+# = Create the document root =
+# ============================
 
 mkdir -p /var/www/$id
 cd /var/www/$id
 
-#
-# Apache Virtual Host
-#
+# =======================
+# = Apache Virtual Host =
+# =======================
 
 VHOST=/etc/apache2/sites-available/$id
 
@@ -68,9 +68,9 @@ chmod -R  g+rw /var/www/$id
 a2ensite $id
 /etc/init.d/apache2 reload
 
-#
-# Setup a new wordpress installation
-#
+# ======================================
+# = Setup a new wordpress installation =
+# ======================================
 
 wp core download
 wp core config --dbname=$id --dbuser=$WpMySqlUser --dbpass=$WpMySqlPass
@@ -97,9 +97,9 @@ wp theme install pagelines
 wp theme activate pagelines
 
 
-#
-# Setting up permalink structure
-#
+# ==================================
+# = Setting up permalink structure =
+# ==================================
 
 > .htaccess
 echo "" >> .htaccess
@@ -115,10 +115,30 @@ echo "</IfModule>" >> .htaccess
 echo "" >> .htaccess
 echo "# END WordPress" >> .htaccess
 
+# ==============================
+# = Set up deployment with git =
+# ==============================
 
-#
-# Make everything owned by www-data
-#
+repo="/var/www/git/$id"
+mkdir -p "$repo"
+cd "$repo"
+git init --bare
+git --bare update-server-info
+
+git config core.bare false
+git config core.worktree /var/www/$id
+git config receive.denycurrentbranch ignore
+touch "hooks/post-receive"
+echo '#!/bin/sh' >> hooks/post-receive
+echo git checkout -f >> hooks/post-receive
+chmod +x hooks/post-receive
+
+# =====================================
+# = Make everything owned by www-data =
+# =====================================
 
 chown -R  www-data:www-data /var/www/$id
 chmod -R  g+rw /var/www/$id
+
+chown -R  www-data:www-data $repo
+chmod -R  g+rw $repo
